@@ -1,8 +1,8 @@
-var express = require('express')
-var multer  = require('multer')
-var upload = multer({ dest: 'uploads/' })
+const express = require('express');
+const multer = require('multer');
+const upload = multer({dest: 'uploads/'});
 
-var app = express()
+const app = express();
 
 app.post('/profile', upload.single('avatar'), function (req, res, next) {
     // req.file is the `avatar` file
