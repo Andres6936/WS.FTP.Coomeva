@@ -7,8 +7,6 @@ const app = express();
 
 app.use(cors({
     origin: '*',
-    optionsSuccessStatus: 200,
-    methods: "GET, PUT, POST"
 }));
 
 app.post('/upload', upload.single('file'), function (req, res, next) {
