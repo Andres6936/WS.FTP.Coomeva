@@ -6,7 +6,7 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({
-    origin: false,
+    origin: '*',
     optionsSuccessStatus: 200,
     methods: "GET, PUT, POST"
 }));
