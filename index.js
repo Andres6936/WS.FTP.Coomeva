@@ -16,7 +16,6 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
     // req.body will hold the text fields, if there were any
     console.log(req.file, req.body)
     res.send("Successful Upload BLOB");
-    res.sendStatus(200);
 })
 
 app.listen(8000, () => {
