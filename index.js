@@ -14,7 +14,10 @@ app.use(cors({
 }));
 
 // Enable pre-flight across-the-board
-app.options('*', cors());
+app.options('*', cors(), ((req, res, next) => {
+    console.log(req, res, next);
+    res.send('CORS Allow');
+}));
 
 app.post('/upload', upload.single('file'), function (req, res, next) {
     // req.file is the `avatar` file
