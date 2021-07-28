@@ -36,6 +36,9 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
     res.send("1");
 })
 
-app.listen(80, () => {
-    console.log('Running port 8000');
+const hostname = '0.0.0.0';
+const port = 80;
+
+app.listen(port, hostname, () => {
+    console.log(`Server running at http://${hostname}:${port}/`);
 });
