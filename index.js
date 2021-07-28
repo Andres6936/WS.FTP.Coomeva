@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
 const cors = require('cors');
+const fs = require('fs');
 const app = express();
 
 app.use(cors({
@@ -26,10 +27,22 @@ app.get('/', function (req, res) {
 app.post('/upload', upload.single('file'), function (req, res, next) {
     // req.file is the `avatar` file
     // req.body will hold the text fields, if there were any
-    console.log(req.file, req.body)
+    console.log(req.file)
+    console.log("Path:" + req.file.path);
 
-    console.log(req.headers["taylor-line"]);
-    console.log(req.headers["taylor-body"]);
+    const lineWords = req.headers["taylor-line"].split('|');
+    const bodyWords = req.headers["taylor-body"].split(';');
+
+    const filename = bodyWords[bodyWords.length - 1];
+
+    fs.rename(req.file.path, req.file.destination + filename, error => {
+        if (error) {
+            console.log(error)
+        }
+    })
+
+    console.log("Filename: " + filename);
+
     // console.log(req.headers["Taylor-Body"].split(';'));
     // const bodyValues = req.headers["Taylor-Body"].split(';');
     // console.log(bodyValues.item(bodyValues.length - 1));
