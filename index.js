@@ -34,13 +34,20 @@ app.get('/', function (req, res) {
 })
 
 app.post('/upload', upload.single('file'), function (req, res, next) {
-    const lineWords = req.headers["taylor-line"].split('|');
+    const lineWords = req.headers["taylor-line"];
     const bodyWords = req.headers["taylor-body"].split(';');
 
-    const filename = bodyWords[bodyWords.length - 1];
-    const newPath = req.file.destination + filename;
+    const filenamePDF = bodyWords[bodyWords.length - 1];
+    const newPath = req.file.destination + filenamePDF;
+    const filenameTXT = newPath.replace('PDF', 'TXT');
 
     fs.rename(req.file.path, newPath, error => {
+        if (error) {
+            console.log(error)
+        }
+    })
+
+    fs.writeFile(filenameTXT, lineWords, error => {
         if (error) {
             console.log(error)
         }
@@ -49,7 +56,7 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
     const absolutePath = path.resolve(newPath);
     console.log('Absolute: ' + absolutePath);
 
-    ftp.put(newPath, filename, error => {
+    ftp.put(newPath, filenamePDF, error => {
         if (error) {
             console.log(error);
         }
