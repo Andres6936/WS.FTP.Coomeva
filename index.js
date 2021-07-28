@@ -65,7 +65,7 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
         }
     })
 
-    ftp.put(newPathTXT, filenamePDF, error => {
+    ftp.put(newPathTXT, filenameTXT, error => {
         if (error) {
             console.log(error);
         }
