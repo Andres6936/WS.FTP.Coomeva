@@ -54,25 +54,24 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
         }
     })
 
-    const absolutePathPDF = path.resolve(newPathPDF);
-    const absolutePathTXT = path.resolve(newPathTXT);
-    console.log('Absolute: ' + absolutePathPDF);
-    console.log('Absolute: ' + absolutePathTXT);
-
-    ftp.put(newPathPDF, filenamePDF, error => {
-        if (error) {
-            console.log(error);
-        }
-    })
-
-    ftp.put(newPathTXT, filenameTXT, error => {
-        if (error) {
-            console.log(error);
-        }
-    })
+    sendFTPAndRemove(newPathPDF, filenamePDF);
+    sendFTPAndRemove(newPathTXT, filenameTXT);
 
     res.send("1");
 })
+
+function sendFTPAndRemove(path, destinationPath) {
+    ftp.put(path, destinationPath, error => {
+        if (error) {
+            console.log(error);
+        } else {
+            // Remove the file of file system.
+            fs.unlink(path, err => {
+                console.log("ERROR: Not is possible delete the file: " + path);
+            })
+        }
+    })
+}
 
 const hostname = '0.0.0.0';
 const port = 80;
