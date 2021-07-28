@@ -1,9 +1,18 @@
 const express = require('express');
 const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
+const FTP = require("jsftp");
+const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
+
+const ftp = new FTP({
+    host: "test.rebex.net",
+    port: 21,
+    user: "demo",
+    pass: "password"
+})
 
 app.use(cors({
     origin: "*",
@@ -19,33 +28,33 @@ app.options('*', cors(), ((req, res, next) => {
     res.send('CORS Allow');
 }));
 
-// respond with "hello world" when a GET request is made to the homepage
+// respond with "1" when a GET request is made to the homepage
 app.get('/', function (req, res) {
     res.send('1');
 })
 
 app.post('/upload', upload.single('file'), function (req, res, next) {
-    // req.file is the `avatar` file
-    // req.body will hold the text fields, if there were any
-    console.log(req.file)
-    console.log("Path:" + req.file.path);
-
     const lineWords = req.headers["taylor-line"].split('|');
     const bodyWords = req.headers["taylor-body"].split(';');
 
     const filename = bodyWords[bodyWords.length - 1];
+    const newPath = req.file.destination + filename;
 
-    fs.rename(req.file.path, req.file.destination + filename, error => {
+    fs.rename(req.file.path, newPath, error => {
         if (error) {
             console.log(error)
         }
     })
 
-    console.log("Filename: " + filename);
+    const absolutePath = path.resolve(newPath);
+    console.log('Absolute: ' + absolutePath);
 
-    // console.log(req.headers["Taylor-Body"].split(';'));
-    // const bodyValues = req.headers["Taylor-Body"].split(';');
-    // console.log(bodyValues.item(bodyValues.length - 1));
+    ftp.put(newPath, filename, error => {
+        if (error) {
+            console.log(error);
+        }
+    })
+
     res.send("1");
 })
 
