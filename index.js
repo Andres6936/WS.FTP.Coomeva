@@ -45,17 +45,18 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
     fs.rename(req.file.path, newPathPDF, error => {
         if (error) {
             console.log(error)
+        } else {
+            sendFTPAndRemove(path.resolve(newPathPDF), filenamePDF);
         }
     })
 
-    fs.writeFile(filenameTXT, lineWords, error => {
+    fs.writeFile(newPathTXT, lineWords, error => {
         if (error) {
             console.log(error)
+        } else {
+            sendFTPAndRemove(path.resolve(newPathTXT), filenameTXT);
         }
     })
-
-    sendFTPAndRemove(newPathPDF, filenamePDF);
-    sendFTPAndRemove(newPathTXT, filenameTXT);
 
     res.send("1");
 })
