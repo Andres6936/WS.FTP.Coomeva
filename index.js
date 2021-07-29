@@ -73,9 +73,8 @@ function sendFTPAndRemove(path, destinationPath) {
     })
 }
 
-const hostname = '0.0.0.0';
-const port = 80;
+const port = 8080;
 
-app.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}/`);
 });
