@@ -8,10 +8,10 @@ const fs = require('fs');
 const app = express();
 
 const ftp = new FTP({
-    host: "test.rebex.net",
-    port: 21,
-    user: "demo",
-    pass: "password"
+    host: "ftps.coomeva.com.co",
+    port: 990,
+    user: "smartroad",
+    pass: "*.Sm4rtR04d.2021"
 })
 
 app.use(cors({
