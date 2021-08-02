@@ -1,17 +1,22 @@
 const express = require('express');
 const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
-const FTP = require("jsftp");
+const Client = require('ftp');
 const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
+const ftp = new Client();
 
-const ftp = new FTP({
+ftp.connect({
     host: "ftps.coomeva.com.co",
     port: 990,
-    user: "smartroad",
-    pass: "*.Sm4rtR04d.2021"
+    user: "smartroad", // defaults to "anonymous"
+    password: "*.Sm4rtR04d.2021", // defaults to "@anonymous"
+    secure: true,
+    pasvTimeout: 20000,
+    keepalive: 20000,
+    secureOptions: {rejectUnauthorized: false}
 })
 
 app.use(cors({
@@ -34,8 +39,8 @@ app.get('/', function (req, res) {
 })
 
 app.post('/upload', upload.single('file'), function (req, res, next) {
-    const lineWords = req.headers["taylor-line"];
-    const bodyWords = req.headers["taylor-body"].split(';');
+    const lineWords = req.headers["taylor-param1"];
+    const bodyWords = req.headers["taylor-param2"].split(';');
 
     const filenamePDF = bodyWords[bodyWords.length - 1];
     const filenameTXT = filenamePDF.replace('PDF', 'TXT');
