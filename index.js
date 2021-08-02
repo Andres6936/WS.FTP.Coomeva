@@ -73,7 +73,10 @@ function sendFTPAndRemove(path, destinationPath) {
         } else {
             // Remove the file of file system.
             fs.unlink(path, err => {
-                console.log("ERROR: Not is possible delete the file: " + path);
+                if (err) {
+                    console.error("ERROR: Not is possible delete the file: " + path);
+                    console.error("ERROR: Message - " + err);
+                }
             })
         }
     })
