@@ -48,12 +48,16 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
     const filenameTXT = filenamePDF.replace('PDF', 'TXT');
     const newPathPDF = req.file.destination + filenamePDF;
     const newPathTXT = req.file.destination + filenameTXT;
+    let directoryFTP = process.env.FTPS_DIR;
+    if (!directoryFTP.endsWith('/')) {
+        directoryFTP += '/'
+    }
 
     fs.rename(req.file.path, newPathPDF, error => {
         if (error) {
             console.log(error)
         } else {
-            sendFTPAndRemove(path.resolve(newPathPDF), filenamePDF);
+            sendFTPAndRemove(path.resolve(newPathPDF), directoryFTP + filenamePDF);
         }
     })
 
@@ -61,7 +65,7 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
         if (error) {
             console.log(error)
         } else {
-            sendFTPAndRemove(path.resolve(newPathTXT), filenameTXT);
+            sendFTPAndRemove(path.resolve(newPathTXT), directoryFTP + filenameTXT);
         }
     })
 
