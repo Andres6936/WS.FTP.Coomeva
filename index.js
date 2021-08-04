@@ -8,11 +8,13 @@ const fs = require('fs');
 const app = express();
 const ftp = new Client();
 
+require('dotenv').config();
+
 ftp.connect({
-    host: "ftps.coomeva.com.co",
-    port: 990,
-    user: "smartroad", // defaults to "anonymous"
-    password: "*.Sm4rtR04d.2021", // defaults to "@anonymous"
+    host: process.env.FTPS_HOST,
+    port: process.env.FTPS_PORT,
+    user: process.env.FTPS_USER, // defaults to "anonymous"
+    password: process.env.FTPS_PASS, // defaults to "@anonymous"
     secure: true,
     pasvTimeout: 20000,
     keepalive: 20000,
@@ -82,7 +84,7 @@ function sendFTPAndRemove(path, destinationPath) {
     })
 }
 
-const port = 8080;
+const port = process.env.WS_PORT;
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
