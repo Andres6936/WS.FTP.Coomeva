@@ -8,11 +8,13 @@ const fs = require('fs');
 const app = express();
 const ftp = new Client();
 
+require('dotenv').config();
+
 ftp.connect({
-    host: "ftps.coomeva.com.co",
-    port: 990,
-    user: "smartroad", // defaults to "anonymous"
-    password: "*.Sm4rtR04d.2021", // defaults to "@anonymous"
+    host: process.env.FTPS_HOST,
+    port: process.env.FTPS_PORT,
+    user: process.env.FTPS_USER, // defaults to "anonymous"
+    password: process.env.FTPS_PASS, // defaults to "@anonymous"
     secure: true,
     pasvTimeout: 20000,
     keepalive: 20000,
@@ -39,6 +41,19 @@ app.get('/', function (req, res) {
 })
 
 app.post('/upload', upload.single('file'), function (req, res, next) {
+
+    // Verify the pre-condition, the params Taylor-Param1 and
+    // Taylor-Param2 must be exist in the header of HTTP
+    if (req.headers["taylor-param1"] === undefined) {
+        // 500 Internal Server Error
+        return res.status(500).send("The Taylor-Param1 not send in the header of HTTP");
+    }
+
+    if (req.headers["taylor-param2"] === undefined) {
+        // 500 Internal Server Error
+        return res.status(500).send("The Taylor-Param2 not send in the header of HTTP");
+    }
+
     const lineWords = req.headers["taylor-param1"];
     const bodyWords = req.headers["taylor-param2"].split(';');
 
@@ -46,12 +61,16 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
     const filenameTXT = filenamePDF.replace('PDF', 'TXT');
     const newPathPDF = req.file.destination + filenamePDF;
     const newPathTXT = req.file.destination + filenameTXT;
+    let directoryFTP = process.env.FTPS_DIR;
+    if (!directoryFTP.endsWith('/')) {
+        directoryFTP += '/'
+    }
 
     fs.rename(req.file.path, newPathPDF, error => {
         if (error) {
             console.log(error)
         } else {
-            sendFTPAndRemove(path.resolve(newPathPDF), filenamePDF);
+            sendFTPAndRemove(path.resolve(newPathPDF), directoryFTP + filenamePDF);
         }
     })
 
@@ -59,7 +78,7 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
         if (error) {
             console.log(error)
         } else {
-            sendFTPAndRemove(path.resolve(newPathTXT), filenameTXT);
+            sendFTPAndRemove(path.resolve(newPathTXT), directoryFTP + filenameTXT);
         }
     })
 
@@ -82,7 +101,7 @@ function sendFTPAndRemove(path, destinationPath) {
     })
 }
 
-const port = 8080;
+const port = process.env.WS_PORT;
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
