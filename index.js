@@ -46,16 +46,12 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
     // Taylor-Param2 must be exist in the header of HTTP
     if (req.headers["taylor-param1"] === undefined) {
         // 500 Internal Server Error
-        res.status(500);
-        res.send("The Taylor-Param1 not send in the header of HTTP");
-        return;
+        return res.status(500).send("The Taylor-Param1 not send in the header of HTTP");
     }
 
     if (req.headers["taylor-param2"] === undefined) {
         // 500 Internal Server Error
-        res.status(500);
-        res.send("The Taylor-Param2 not send in the header of HTTP");
-        return;
+        return res.status(500).send("The Taylor-Param2 not send in the header of HTTP");
     }
 
     const lineWords = req.headers["taylor-param1"];
