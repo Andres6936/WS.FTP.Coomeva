@@ -42,6 +42,8 @@ app.get('/', function (req, res) {
 
 app.post('/upload', upload.single('file'), function (req, res, next) {
 
+    // Verify the pre-condition, the params Taylor-Param1 and
+    // Taylor-Param2 must be exist in the header of HTTP
     if (req.headers["taylor-param1"] === undefined) {
         res.status(412);
         res.send("The Taylor-Param1 not send in the header of HTTP");
