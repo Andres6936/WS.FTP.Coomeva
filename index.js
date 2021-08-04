@@ -41,6 +41,19 @@ app.get('/', function (req, res) {
 })
 
 app.post('/upload', upload.single('file'), function (req, res, next) {
+
+    if (req.headers["taylor-param1"] === undefined) {
+        res.status(412);
+        res.send("The Taylor-Param1 not send in the header of HTTP");
+        return;
+    }
+
+    if (req.headers["taylor-param2"] === undefined) {
+        res.status(412);
+        res.send("The Taylor-Param2 not send in the header of HTTP");
+        return;
+    }
+
     const lineWords = req.headers["taylor-param1"];
     const bodyWords = req.headers["taylor-param2"].split(';');
 
