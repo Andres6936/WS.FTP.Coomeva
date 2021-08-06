@@ -1,0 +1,15 @@
+[Unit]
+Description=Intergration Taylor to Extremo Digital, Send of files using FTP.
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/npm start
+WorkingDirectory=/home/jorge-salamanca/web/WSCMV
+Restart=always
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
