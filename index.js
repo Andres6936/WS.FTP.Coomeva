@@ -3,8 +3,6 @@ const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
 const Client = require('ftp');
 const path = require('path');
-const https = require('https');
-const http = require('http');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
@@ -103,18 +101,8 @@ function sendFTPAndRemove(path, destinationPath) {
     })
 }
 
-const privateKey = fs.readFileSync(process.env.KEY_SSL, 'utf8');
-const certificate = fs.readFileSync(process.env.CRT_SSL, 'utf8');
+const port = process.env.PORT || 8080
 
-const credentials = {key: privateKey, cert: certificate};
-
-const portHttp = process.env.WS_PORT;
-
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
-
-httpServer.listen(portHttp);
-httpsServer.listen(8443);
-
-console.log(`Server running at http://localhost:${portHttp}/`);
-console.log(`Server running at https://localhost:${8443}/`);
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+})
