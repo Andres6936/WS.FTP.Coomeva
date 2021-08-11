@@ -40,7 +40,7 @@ app.get('/', function (req, res) {
     res.send('1');
 })
 
-app.post('/upload', upload.single('file'), function (req, res, next) {
+app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, next) {
 
     // Verify the pre-condition, the params Taylor-Param1 and
     // Taylor-Param2 must be exist in the header of HTTP
