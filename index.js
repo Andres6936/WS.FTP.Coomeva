@@ -54,7 +54,7 @@ app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, 
         return res.status(500).send("The Taylor-Param2 not send in the header of HTTP");
     }
 
-    const lineWords = req.headers["taylor-param1"];
+    const lineWords = req.headers["taylor-param1"] + '\n' + req.headers["taylor-param2"];
     const bodyWords = req.headers["taylor-param2"].split(';');
 
     const filenamePDF = bodyWords[bodyWords.length - 1];
