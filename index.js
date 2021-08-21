@@ -41,7 +41,7 @@ app.get('/', function (req, res) {
 })
 
 app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, next) {
-    console.log("Getting POST request: ", new Date().toISOString())
+    console.log("Getting POST request from: ", req.ip, new Date().toISOString())
 
     // Verify the pre-condition, the params Taylor-Param1 and
     // Taylor-Param2 must be exist in the header of HTTP
