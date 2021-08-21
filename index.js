@@ -87,7 +87,7 @@ app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, 
 })
 
 function sendFTPAndRemove(path, destinationPath) {
-    ftp.put(path, destinationPath, error => {
+    ftp.put(path, destinationPath, false, error => {
         if (error) {
             console.log(error);
         } else {
