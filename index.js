@@ -41,6 +41,7 @@ app.get('/', function (req, res) {
 })
 
 app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, next) {
+    console.log("Getting POST request: ", new Date().toISOString())
 
     // Verify the pre-condition, the params Taylor-Param1 and
     // Taylor-Param2 must be exist in the header of HTTP
@@ -90,11 +91,14 @@ function sendFTPAndRemove(path, destinationPath) {
         if (error) {
             console.log(error);
         } else {
+            console.log("File send using FTP: ", path, destinationPath);
             // Remove the file of file system.
             fs.unlink(path, err => {
                 if (err) {
                     console.error("ERROR: Not is possible delete the file: " + path);
                     console.error("ERROR: Message - " + err);
+                } else {
+                    console.log("Deleting the file: ", path);
                 }
             })
         }
