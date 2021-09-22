@@ -91,6 +91,11 @@ app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, 
     res.send("1");
 })
 
+/**
+ * Send the file to FTP server and later deleted the file from file system.
+ * @param path Path of file to send for the FTP server.
+ * @param destinationPath FTP destination path where the sent file will be stored.
+ */
 function sendFTPAndRemove(path, destinationPath) {
     ftp.put(path, destinationPath, false, error => {
         if (error) {
