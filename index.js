@@ -1,7 +1,6 @@
 const express = require('express');
 const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
-const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
@@ -54,38 +53,21 @@ app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, 
     const filenameTXT = filenamePDF.replace('PDF', 'TXT');
     const newPathPDF = req.file.destination + filenamePDF;
     const newPathTXT = req.file.destination + filenameTXT;
-    let directoryFTP = process.env.FTPS_DIR;
-    if (!directoryFTP.endsWith('/')) {
-        directoryFTP += '/'
-    }
 
     fs.rename(req.file.path, newPathPDF, error => {
         if (error) {
             console.log(error)
-        } else {
-            sendFTPAndRemove(path.resolve(newPathPDF), directoryFTP + filenamePDF);
         }
     })
 
     fs.writeFile(newPathTXT, lineWords, error => {
         if (error) {
             console.log(error)
-        } else {
-            sendFTPAndRemove(path.resolve(newPathTXT), directoryFTP + filenameTXT);
         }
     })
 
     res.send("1");
 })
-
-/**
- * Send the file to FTP server and later deleted the file from file system.
- * @param path Path of file to send for the FTP server.
- * @param destinationPath FTP destination path where the sent file will be stored.
- */
-function sendFTPAndRemove(path, destinationPath) {
-
-}
 
 const port = process.env.PORT || 8080
 
