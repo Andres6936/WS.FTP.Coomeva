@@ -10,11 +10,16 @@ const ftp = new Client();
 
 require('dotenv').config();
 
+/**
+ * The connection to the FTP server is made, one of the characteristics
+ * of this connection is its constant communication with the server.
+ * connection will be turned off once the service is turned off.
+ */
 ftp.connect({
     host: process.env.FTPS_HOST,
     port: process.env.FTPS_PORT,
-    user: process.env.FTPS_USER, // defaults to "anonymous"
-    password: process.env.FTPS_PASS, // defaults to "@anonymous"
+    user: process.env.FTPS_USER,
+    password: process.env.FTPS_PASS,
     secure: true,
     pasvTimeout: 20000,
     keepalive: 20000,
