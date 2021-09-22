@@ -61,9 +61,12 @@ app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, 
     }
 
     const lineWords = req.headers["taylor-param1"] + '\n' + req.headers["taylor-param2"];
+    // @type List[String] List of words in the body.
     const bodyWords = req.headers["taylor-param2"].split(';');
 
+    // @type String The final name of PDF.
     const filenamePDF = bodyWords[bodyWords.length - 1];
+    // @type String The final name of TXT.
     const filenameTXT = filenamePDF.replace('PDF', 'TXT');
     const newPathPDF = req.file.destination + filenamePDF;
     const newPathTXT = req.file.destination + filenameTXT;
