@@ -2,7 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const ftp = require('basic-ftp');
 
-async function sendFile(filename) {
+async function sendFiles() {
+    let files = fs.readdirSync('uploads/');
     const client = new ftp.Client();
     client.ftp.verbose = true;
     try {
@@ -22,31 +23,27 @@ async function sendFile(filename) {
         if (!destinationPath.endsWith('/')) {
             destinationPath += '/'
         }
-        const pathFile = path.resolve('uploads/' + filename);
-        await client.uploadFrom(pathFile, destinationPath + filename).then(r => {
-            console.log('Response: ' + r);
-            console.log("File send using FTP: ", filename, destinationPath);
-            // Remove the file of file system.
-            fs.unlink(filename, err => {
-                if (err) {
-                    console.error("ERROR: Not is possible delete the file: " + filename);
-                    console.error("ERROR: Message - " + err);
-                } else {
-                    console.log("Deleting the file: ", filename);
-                }
-            })
-        });
+
+        for (let file of files) {
+            const pathFile = path.resolve('uploads/' + file);
+            await client.uploadFrom(pathFile, destinationPath + file).then(r => {
+                console.log('Response: ' + r);
+                console.log("File send using FTP: ", file, destinationPath);
+                // Remove the file of file system.
+                fs.unlink(file, err => {
+                    if (err) {
+                        console.error("ERROR: Not is possible delete the file: " + file);
+                        console.error("ERROR: Message - " + err);
+                    } else {
+                        console.log("Deleting the file: ", file);
+                    }
+                })
+            });
+        }
     } catch (err) {
         console.error(err);
     }
-    client.close()
-}
-
-async function sendFiles() {
-    let files = fs.readdirSync('uploads/');
-    for (const file of files) {
-        await sendFile(file)
-    }
+    await client.close()
 }
 
 module.exports = {sendFiles}
