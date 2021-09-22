@@ -1,7 +1,8 @@
 ### How to configure .env file (Not include in project)
 
 ```
-WS_PORT=8080
+PORT=8080
+DEBUG=true
 
 FTPS_HOST=ftp.example.com
 FTPS_PORT=555
