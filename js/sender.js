@@ -1,6 +1,23 @@
+const fs = require('fs');
+const path = require('path');
 const ftp = require('basic-ftp');
 
+async function removeAllFiles(directory) {
+    fs.readdir(directory, (err, files) => {
+        if (err) throw err;
+
+        for (const file of files) {
+            fs.unlink(path.join(directory, file), err => {
+                if (err) throw err;
+            });
+        }
+    });
+}
+
 async function sendFiles() {
+    // Only execute function if exist almost an file in the directory
+    if (fs.readdirSync('uploads/').length === 0) return;
+
     const client = new ftp.Client();
     // Only for debug session
     client.ftp.verbose = (process.env.DEBUG === 'true');
@@ -35,6 +52,7 @@ async function sendFiles() {
 
         await client.cd(destinationPath);
         await client.uploadFromDir('uploads/');
+        await removeAllFiles('uploads/');
     } catch (err) {
         console.error(err);
     }
