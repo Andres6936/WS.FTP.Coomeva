@@ -91,8 +91,8 @@ const port = process.env.PORT || 8080
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
-})
+});
 
-setInterval(() => {
-    sender.sendFiles().then(r => console.dir(r))
-}, 10000)
+(async () => {
+    await sender.sendFiles();
+})();

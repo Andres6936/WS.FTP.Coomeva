@@ -1,9 +1,7 @@
 const fs = require('fs');
-const path = require('path');
 const ftp = require('basic-ftp');
 
 async function sendFiles() {
-    let files = fs.readdirSync('uploads/');
     const client = new ftp.Client();
     client.ftp.verbose = true;
     try {
@@ -19,26 +17,23 @@ async function sendFiles() {
             password: process.env.FTPS_PASS,
             secure: true
         })
+
+        // Log progress for any transfer from now on.
+        client.trackProgress(info => {
+            console.log("File", info.name)
+            console.log("Type", info.type)
+            console.log("Transferred", info.bytes)
+            console.log("Transferred Overall", info.bytesOverall)
+        })
+
         let destinationPath = process.env.FTPS_DIR;
         if (!destinationPath.endsWith('/')) {
             destinationPath += '/'
         }
 
-        for (let file of files) {
-            const pathFile = path.resolve('uploads/' + file);
-            await client.uploadFrom(pathFile, destinationPath + file);
-            await console.log('Response: ' + r);
-            await console.log("File send using FTP: ", file, destinationPath);
-            // Remove the file of file system.
-            fs.unlink(file, err => {
-                if (err) {
-                    console.error("ERROR: Not is possible delete the file: " + file);
-                    console.error("ERROR: Message - " + err);
-                } else {
-                    console.log("Deleting the file: ", file);
-                }
-            })
-        }
+        await client.ensureDir(destinationPath);
+        await client.cd(destinationPath);
+        await client.uploadFromDir('uploads/');
     } catch (err) {
         console.error(err);
     }
