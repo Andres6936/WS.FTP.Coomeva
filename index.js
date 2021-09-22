@@ -94,5 +94,5 @@ app.listen(port, () => {
 })
 
 setInterval(() => {
-    sender.sendFiles()
+    sender.sendFiles().then(r => console.dir(r))
 }, 5000)

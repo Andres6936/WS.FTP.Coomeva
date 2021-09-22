@@ -1,56 +1,52 @@
 const fs = require('fs');
 const path = require('path');
-const Client = require('ftp');
+const ftp = require('basic-ftp');
 
-
-function sendFiles() {
-    fs.readdir('uploads/', ((err, files) => {
-        if (files.length === 0) return;
-
-        const ftp = new Client();
-
+async function sendFile(filename) {
+    const client = new ftp.Client();
+    client.ftp.verbose = true;
+    try {
         /**
          * The connection to the FTP server is made, one of the characteristics
          * of this connection is its constant communication with the server.
          * connection will be turned off once the service is turned off.
          */
-        ftp.connect({
+        await client.access({
             host: process.env.FTPS_HOST,
             port: process.env.FTPS_PORT,
             user: process.env.FTPS_USER,
             password: process.env.FTPS_PASS,
-            secure: true,
-            pasvTimeout: 20000,
-            keepalive: 20000,
-            secureOptions: {rejectUnauthorized: false}
+            secure: true
         })
-
-        files.forEach(file => {
-            const pathFile = path.resolve(file);
-            let destinationPath = process.env.FTPS_DIR;
-            if (!destinationPath.endsWith('/')) {
-                destinationPath += '/'
-            }
-
-            ftp.put(pathFile, destinationPath + file, false, error => {
-                if (error) {
-                    console.log(error);
+        let destinationPath = process.env.FTPS_DIR;
+        if (!destinationPath.endsWith('/')) {
+            destinationPath += '/'
+        }
+        const pathFile = path.resolve('uploads/' + filename);
+        await client.uploadFrom(pathFile, destinationPath + filename).then(r => {
+            console.log('Response: ' + r);
+            console.log("File send using FTP: ", filename, destinationPath);
+            // Remove the file of file system.
+            fs.unlink(filename, err => {
+                if (err) {
+                    console.error("ERROR: Not is possible delete the file: " + filename);
+                    console.error("ERROR: Message - " + err);
                 } else {
-                    console.log("File send using FTP: ", pathFile, destinationPath);
-                    // Remove the file of file system.
-                    fs.unlink(pathFile, err => {
-                        if (err) {
-                            console.error("ERROR: Not is possible delete the file: " + pathFile);
-                            console.error("ERROR: Message - " + err);
-                        } else {
-                            console.log("Deleting the file: ", pathFile);
-                        }
-                    })
+                    console.log("Deleting the file: ", filename);
                 }
             })
+        });
+    } catch (err) {
+        console.error(err);
+    }
+    client.close()
+}
 
-        })
-    }))
+async function sendFiles() {
+    let files = fs.readdirSync('uploads/');
+    for (const file of files) {
+        await sendFile(file)
+    }
 }
 
 module.exports = {sendFiles}
