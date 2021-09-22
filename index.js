@@ -7,6 +7,7 @@ const cors = require('cors');
 const fs = require('fs');
 const app = express();
 const ftp = new Client();
+const sender = require('./js/sender')
 
 require('dotenv').config();
 
@@ -123,3 +124,7 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 })
+
+setInterval(() => {
+    sender.sendFiles()
+}, 5000)
