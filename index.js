@@ -95,4 +95,4 @@ app.listen(port, () => {
 
 setInterval(() => {
     sender.sendFiles().then(r => console.dir(r))
-}, 5000)
+}, 10000)

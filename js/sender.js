@@ -26,19 +26,18 @@ async function sendFiles() {
 
         for (let file of files) {
             const pathFile = path.resolve('uploads/' + file);
-            await client.uploadFrom(pathFile, destinationPath + file).then(r => {
-                console.log('Response: ' + r);
-                console.log("File send using FTP: ", file, destinationPath);
-                // Remove the file of file system.
-                fs.unlink(file, err => {
-                    if (err) {
-                        console.error("ERROR: Not is possible delete the file: " + file);
-                        console.error("ERROR: Message - " + err);
-                    } else {
-                        console.log("Deleting the file: ", file);
-                    }
-                })
-            });
+            await client.uploadFrom(pathFile, destinationPath + file);
+            await console.log('Response: ' + r);
+            await console.log("File send using FTP: ", file, destinationPath);
+            // Remove the file of file system.
+            fs.unlink(file, err => {
+                if (err) {
+                    console.error("ERROR: Not is possible delete the file: " + file);
+                    console.error("ERROR: Message - " + err);
+                } else {
+                    console.log("Deleting the file: ", file);
+                }
+            })
         }
     } catch (err) {
         console.error(err);
