@@ -1,31 +1,14 @@
 const express = require('express');
 const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
-const Client = require('ftp');
 const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
-const ftp = new Client();
 const sender = require('./js/sender')
 
 require('dotenv').config();
 
-/**
- * The connection to the FTP server is made, one of the characteristics
- * of this connection is its constant communication with the server.
- * connection will be turned off once the service is turned off.
- */
-ftp.connect({
-    host: process.env.FTPS_HOST,
-    port: process.env.FTPS_PORT,
-    user: process.env.FTPS_USER,
-    password: process.env.FTPS_PASS,
-    secure: true,
-    pasvTimeout: 20000,
-    keepalive: 20000,
-    secureOptions: {rejectUnauthorized: false}
-})
 
 app.use(cors({
     origin: "*",
@@ -101,22 +84,7 @@ app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, 
  * @param destinationPath FTP destination path where the sent file will be stored.
  */
 function sendFTPAndRemove(path, destinationPath) {
-    ftp.put(path, destinationPath, false, error => {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log("File send using FTP: ", path, destinationPath);
-            // Remove the file of file system.
-            fs.unlink(path, err => {
-                if (err) {
-                    console.error("ERROR: Not is possible delete the file: " + path);
-                    console.error("ERROR: Message - " + err);
-                } else {
-                    console.log("Deleting the file: ", path);
-                }
-            })
-        }
-    })
+
 }
 
 const port = process.env.PORT || 8080
