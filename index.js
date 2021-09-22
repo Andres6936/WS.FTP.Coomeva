@@ -93,6 +93,7 @@ app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
 
+// Each 90 seg. this functions is executed.
 setInterval(async () => {
     await sender.sendFiles();
-}, 10_000);
+}, 90_000);
