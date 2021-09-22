@@ -2,7 +2,8 @@ const ftp = require('basic-ftp');
 
 async function sendFiles() {
     const client = new ftp.Client();
-    client.ftp.verbose = true;
+    // Only for debug session
+    client.ftp.verbose = (process.env.DEBUG === 'true');
     try {
         /**
          * The connection to the FTP server is made, one of the characteristics
@@ -19,10 +20,12 @@ async function sendFiles() {
 
         // Log progress for any transfer from now on.
         client.trackProgress(info => {
-            console.log("File", info.name)
-            console.log("Type", info.type)
-            console.log("Transferred", info.bytes)
-            console.log("Transferred Overall", info.bytesOverall)
+            if (process.env.DEBUG === 'true') {
+                console.log("File", info.name)
+                console.log("Type", info.type)
+                console.log("Transferred", info.bytes)
+                console.log("Transferred Overall", info.bytesOverall)
+            }
         })
 
         let destinationPath = process.env.FTPS_DIR;
