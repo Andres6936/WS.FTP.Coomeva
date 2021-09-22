@@ -1,4 +1,3 @@
-const fs = require('fs');
 const ftp = require('basic-ftp');
 
 async function sendFiles() {
@@ -31,7 +30,6 @@ async function sendFiles() {
             destinationPath += '/'
         }
 
-        await client.ensureDir(destinationPath);
         await client.cd(destinationPath);
         await client.uploadFromDir('uploads/');
     } catch (err) {
