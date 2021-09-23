@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const upload = multer({dest: 'uploads/'});
+const upload = multer({dest: 'temp/'});
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
@@ -51,23 +51,28 @@ app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, 
     const filenamePDF = bodyWords[bodyWords.length - 1];
     // @type String The final name of TXT.
     const filenameTXT = filenamePDF.replace('PDF', 'TXT');
-    const newPathPDF = req.file.destination + filenamePDF;
-    const newPathTXT = req.file.destination + filenameTXT;
+    const newPathPDF = 'uploads/' + filenamePDF;
+    const newPathTXT = 'uploads/' + filenameTXT;
 
-    fs.rename(req.file.path, newPathPDF, error => {
-        if (error) {
-            console.log(error)
+    const directoryFlag = setInterval(() => {
+        if (!fs.existsSync('uploads/.lock')) {
+            console.log("Writing files to directory uploads");
+            clearInterval(directoryFlag);
+            writeFiles(req.file.path, newPathPDF, newPathTXT, lineWords);
         }
-    })
-
-    fs.writeFile(newPathTXT, lineWords, error => {
-        if (error) {
-            console.log(error)
-        }
-    })
+    }, 100);
 
     res.send("1");
 })
+
+function writeFiles(pathFile, pathPDF, pathTXT, linesTXT) {
+    try {
+        fs.renameSync(pathFile, pathPDF);
+        fs.writeFileSync(pathTXT, linesTXT)
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 const port = process.env.PORT || 8080
 

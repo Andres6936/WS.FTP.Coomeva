@@ -17,6 +17,7 @@ async function removeAllFiles(directory) {
 async function sendFiles() {
     // Only execute function if exist almost an file in the directory
     if (fs.readdirSync('uploads/').length === 0) return;
+    if (fs.existsSync('uploads/.lock') === true) return;
 
     const client = new ftp.Client();
     // Only for debug session
@@ -50,6 +51,7 @@ async function sendFiles() {
             destinationPath += '/'
         }
 
+        await fs.promises.writeFile('uploads/.lock', new Date().toISOString())
         await client.cd(destinationPath);
         await client.uploadFromDir('uploads/');
         await removeAllFiles('uploads/');
