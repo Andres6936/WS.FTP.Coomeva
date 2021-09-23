@@ -5,7 +5,10 @@ const ftp = require('basic-ftp');
 /**
  * Removes the dummy file (usually a .lock) used to block access to the
  * directory that is used by several processes in parallel to perform
- * write operations.
+ * write operations. The default behavior of this function is to suppress
+ * the warning or error that is generated when trying to delete a file
+ * that does not exist, if you wish to obtain this behavior refrain from
+ * using this function.
  *
  * @param directory The directory from the lock file resides.
  * @returns {Promise<void>} None.
@@ -13,8 +16,7 @@ const ftp = require('basic-ftp');
 async function removeLockFileFrom(directory) {
     try {
         await fs.promises.unlink(path.join(directory, '.lock'));
-    } catch (error) {
-        console.log(error);
+    } catch (ignored) {
     }
 }
 
