@@ -14,6 +14,26 @@ async function removeAllFiles(directory) {
     });
 }
 
+/**
+ * This function is executed only if two conditions are true, the first
+ * condition is that there is at least one file in the directory and the
+ * second condition is that no other process is blocking the directory.
+ *
+ * A problem that can occur with this function is that it produces a
+ * deadlock, since the existence of a dummy file (in this case a .lock
+ * that is used to determine the lock of the directory) can cause the
+ * function to stop executing, blocking the other processes that need
+ * to access this directory, to avoid this type of problem two conditions
+ * must be met:
+ *
+ * The first condition is that only one function must be in charge of
+ * creating the dummy file (in this case the .lock), the second condition
+ * is that the function that is in charge of creating the dummy file must
+ * be the same function that must also be in charge of deleting it once
+ * the directory has been released.
+ *
+ * @returns {Promise<void>} None
+ */
 async function sendFiles() {
     // Only execute function if exist almost an file in the directory
     if (fs.readdirSync('uploads/').length === 0) return;
