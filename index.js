@@ -72,8 +72,13 @@ app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, 
     // present, we will wait until the directory is released (that is to say,
     // the dummy file has disappeared or deleted).
     const directoryFlag = setInterval(() => {
+        // We wait for the directory to be freed to proceed to write the files,
+        // otherwise if the directory is not being freed it will retry every
+        // 100 ms.
         if (!fs.existsSync('uploads/.lock')) {
-            console.log("Writing files to directory uploads");
+            // Once the directory has been freed it will not be necessary to
+            // continue executing this function every 100 ms, so we eliminate
+            // the execution interval
             clearInterval(directoryFlag);
             writeFiles(req.file.path, newPathPDF, newPathTXT, lineWords);
         }
