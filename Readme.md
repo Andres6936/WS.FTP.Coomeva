@@ -1,7 +1,10 @@
 ### How to configure .env file (Not include in project)
 
 ```
+# Posible values are only Integers
 PORT=8080
+
+# Posibles value are <true | false>
 DEBUG=true
 
 FTPS_HOST=ftp.example.com
