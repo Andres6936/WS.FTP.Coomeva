@@ -128,4 +128,4 @@ async function sendFiles() {
     await client.close()
 }
 
-module.exports = {sendFiles}
+module.exports = {sendFiles, removeLockFileFrom}

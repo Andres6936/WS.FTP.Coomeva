@@ -8,6 +8,25 @@ const sender = require('./js/sender')
 
 require('dotenv').config();
 
+(async () => {
+    // We verify the exposed precondition, what happens if the service ends
+    // unexpectedly and the lock on the FTP sending directory is maintained,
+    // because the service will not send any file until this lock has been
+    // removed, with this approach what we will do is to unlock the directory
+    // in case it has been blocked by an unexpected exit of the service.
+    // This function will be executed only once when the service is started,
+    // or reset.
+    await sender.removeLockFileFrom('uploads/')
+})();
+
+// Each 90 seg. this functions is executed. The objective is to allow sending
+// files that have been stuck in the folder due to a failure in the
+// communication with the FTP service. If a failure occurs, it is guaranteed
+// that every 90 seconds this function will be executed until no file is left
+// in the directory.
+setInterval(async () => {
+    await sender.sendFiles();
+}, 90_000);
 
 app.use(cors({
     origin: "*",
@@ -101,8 +120,3 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
-
-// Each 90 seg. this functions is executed.
-setInterval(async () => {
-    await sender.sendFiles();
-}, 90_000);
