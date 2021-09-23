@@ -35,7 +35,9 @@ async function removeAllFiles(directory) {
  * @returns {Promise<void>} None
  */
 async function sendFiles() {
-    // Only execute function if exist almost an file in the directory
+    // We verify that the conditions mentioned above are met, i.e., that
+    // there is more than one file in the directory and that it is released
+    // by another function
     if (fs.readdirSync('uploads/').length === 0) return;
     if (fs.existsSync('uploads/.lock') === true) return;
 
