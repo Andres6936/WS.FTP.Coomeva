@@ -45,11 +45,12 @@ async function sendFiles() {
     // Only for debug session
     client.ftp.verbose = (process.env.DEBUG === 'true');
     try {
-        /**
-         * The connection to the FTP server is made, one of the characteristics
-         * of this connection is its constant communication with the server.
-         * connection will be turned off once the service is turned off.
-         */
+        // We make the connection to the FTP server, a feature of this
+        // connection is: Unlike a previous implementation, this connection
+        // will only be established if there is at least one file to send,
+        // if there is no file to send the connection will not be established,
+        // saving network resources and avoiding the blocking of the IP by a
+        // constant PING done day and night (non-stop).
         await client.access({
             host: process.env.FTPS_HOST,
             port: process.env.FTPS_PORT,
