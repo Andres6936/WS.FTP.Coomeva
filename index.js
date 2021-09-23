@@ -54,6 +54,23 @@ app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, 
     const newPathPDF = 'uploads/' + filenamePDF;
     const newPathTXT = 'uploads/' + filenameTXT;
 
+    // The purpose of this function is to write the files to the folder
+    // intended for FTP sending, at the moment that folder is 'uploads/'.
+    // An undesired consequence that can happen with folders where several
+    // functions are executed in parallel is the fact that there may be files
+    // deleted or moved when they should not be, as an explanation, the folder
+    // is populated by a number of files that have arrived as a request from
+    // various points, if a request arrives at the very moment when files are
+    // being deleted or moved this file that arrived as a result of a request
+    // will be deleted without having been processed or registered causing the
+    // deletion or loss of information.
+    // To prevent this type of problems we resort to a famous technique which
+    // is to use a dummy file (we use a .lock) that will be used to determine
+    // when a function that must act only on the directory (for example a
+    // function that must delete all the files in the directory or move the
+    // files from one directory to another) is working, if this file is
+    // present, we will wait until the directory is released (that is to say,
+    // the dummy file has disappeared or deleted).
     const directoryFlag = setInterval(() => {
         if (!fs.existsSync('uploads/.lock')) {
             console.log("Writing files to directory uploads");
