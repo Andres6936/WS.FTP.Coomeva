@@ -2,12 +2,22 @@ const fs = require('fs');
 const path = require('path');
 const ftp = require('basic-ftp');
 
-async function removeAllFiles(directory) {
-    fs.readdir(directory, (err, files) => {
+/**
+ * Move all the files from directory to directory, if the destination
+ * directory not exist it function created the directory.
+ *
+ * @param from Directory from the current files are stored.
+ * @param to Destination directory from the files will be saved.
+ * @returns {Promise<void>} None
+ */
+async function moveAllFiles(from, to) {
+    // Created the directory if not exist
+    await fs.promises.mkdir(to)
+    fs.readdir(from, (err, files) => {
         if (err) throw err;
 
         for (const file of files) {
-            fs.unlink(path.join(directory, file), err => {
+            fs.rename(path.join(from, file), path.join(to, file), err => {
                 if (err) throw err;
             });
         }
@@ -77,7 +87,7 @@ async function sendFiles() {
         await fs.promises.writeFile('uploads/.lock', new Date().toISOString())
         await client.cd(destinationPath);
         await client.uploadFromDir('uploads/');
-        await removeAllFiles('uploads/');
+        await moveAllFiles('uploads/', 'backup/');
     } catch (err) {
         console.error(err);
     }
