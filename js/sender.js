@@ -130,4 +130,4 @@ async function sendFiles() {
     await client.close()
 }
 
-module.exports = {sendFiles, removeLockFileFrom}
+module.exports = {sendFiles, verifyDirectory, removeLockFileFrom}

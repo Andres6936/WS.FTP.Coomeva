@@ -9,6 +9,12 @@ const sender = require('./js/sender')
 require('dotenv').config();
 
 (async () => {
+    // We verify the uploads/ folder, generally this folder must be created
+    // in the system files of the server before being able to continue with
+    // the execution of the service, but in servers where a new deployment
+    // is made this folder in which case there is a forgetting to create it
+    // will be created automatically to avoid an exception when not finding it.
+    await sender.verifyDirectory('uploads/')
     // We verify the exposed precondition, what happens if the service ends
     // unexpectedly and the lock on the FTP sending directory is maintained,
     // because the service will not send any file until this lock has been
@@ -70,8 +76,21 @@ app.post('/service/ftp/ext/digital', upload.single('file'), function (req, res, 
     const filenamePDF = bodyWords[bodyWords.length - 1];
     // @type String The final name of TXT.
     const filenameTXT = filenamePDF.replace('PDF', 'TXT');
-    const newPathPDF = 'uploads/' + filenamePDF;
+    // @type String the final directory where the PDF will be stored.
+    // We need to extract the file name but without the extension,
+    // as a reference I got this answer: https://stackoverflow.com/a/4250408
+    const directoryPDF = filenamePDF.replace(/\.[^/.]+$/, "/");
+    const newPathPDF = 'uploads/' + directoryPDF + filenamePDF;
     const newPathTXT = 'uploads/' + filenameTXT;
+
+    // Ensure that directory exist for move the PDF it this place.
+    // We make sure that the directory exists before continuing with the
+    // response to the request, with this we avoid getting an exception
+    // when moving a file from and to a directory where it does not exist.
+    // This operation is synchronous, that means that the execution thread
+    // will be blocked until the operation is completed, the operation to
+    // be performed is expected to be fast (and usually is).
+    fs.mkdirSync('uploads/' + directoryPDF);
 
     // The purpose of this function is to write the files to the folder
     // intended for FTP sending, at the moment that folder is 'uploads/'.
